@@ -411,6 +411,7 @@ class ElectrumX(SessionBase):
             'blockchain.block.get_chunk': self.block_get_chunk,
             'blockchain.block.get_header': controller.block_get_header,
             'blockchain.estimatefee': controller.estimatefee,
+            'mempool.get_fees': controller.mempool_get_fees,
             'blockchain.headers.subscribe': self.headers_subscribe,
             'blockchain.relayfee': controller.relayfee,
             'blockchain.transaction.get_merkle':

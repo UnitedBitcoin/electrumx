@@ -36,7 +36,7 @@ from lib.util import (cachedproperty, unpack_int32_from, unpack_int64_from,
                       unpack_uint64_from)
 
 
-class Tx(namedtuple("Tx", "version inputs outputs locktime")):
+class Tx(namedtuple("Tx", "version inputs outputs locktime size")):
     '''Class representing a transaction.'''
 
     @cachedproperty
@@ -94,7 +94,8 @@ class Deserializer(object):
             self._read_le_int32(),  # version
             self._read_inputs(),    # inputs
             self._read_outputs(),   # outputs
-            self._read_le_uint32()  # locktime
+            self._read_le_uint32(), # locktime
+            self.binary_length      # size
         ), double_sha256(self.binary[start:self.cursor])
 
     def read_tx_block(self):
@@ -178,8 +179,10 @@ class Deserializer(object):
 
 
 class TxSegWit(namedtuple("Tx", "version marker flag inputs outputs "
-                          "witness locktime")):
-    '''Class representing a SegWit transaction.'''
+                          "witness locktime size")):
+    '''Class representing a SegWit transaction.
+    Size is the virtual size of the transaction (weight/4).
+    '''
 
     @cachedproperty
     def is_coinbase(self):
@@ -221,14 +224,17 @@ class DeserializerSegWit(Deserializer):
         outputs = self._read_outputs()
         orig_ser += self.binary[start:self.cursor]
 
+        base_size = self.cursor - start
         witness = self._read_witness(len(inputs))
 
         start = self.cursor
         locktime = self._read_le_uint32()
         orig_ser += self.binary[start:self.cursor]
 
-        return TxSegWit(version, marker, flag, inputs,
-                        outputs, witness, locktime), double_sha256(orig_ser)
+        total_size = self.binary_length
+        vsize = (3 * base_size + total_size) // 4
+        return TxSegWit(version, marker, flag, inputs, outputs,
+                        witness, locktime, vsize), double_sha256(orig_ser)
 
 
 class DeserializerAuxPow(Deserializer):
