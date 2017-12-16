@@ -825,7 +825,7 @@ class Controller(ServerBase):
         number = self.non_negative_integer(number)
         return await self.daemon_request('estimatefee', [number])
 
-    async def mempool_get_fees(self):
+    def mempool_get_fees(self):
         '''Memory pool fee histogram.
 
         TODO: The server should detect and discount transactions that

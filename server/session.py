@@ -411,7 +411,6 @@ class ElectrumX(SessionBase):
             'blockchain.block.get_chunk': self.block_get_chunk,
             'blockchain.block.get_header': controller.block_get_header,
             'blockchain.estimatefee': controller.estimatefee,
-            'mempool.get_fees': controller.mempool_get_fees,
             'blockchain.headers.subscribe': self.headers_subscribe,
             'blockchain.relayfee': controller.relayfee,
             'blockchain.transaction.get_merkle':
@@ -448,6 +447,12 @@ class ElectrumX(SessionBase):
                 'blockchain.scripthash.subscribe': self.scripthash_subscribe,
                 'blockchain.transaction.broadcast': self.transaction_broadcast,
                 'blockchain.transaction.get': controller.transaction_get,
+            })
+
+        if ptuple >= (1, 2):
+            # New handler as of 1.2
+            handlers.update({
+                'mempool.get_fees': controller.mempool_get_fees,
             })
 
         self.electrumx_handlers = handlers

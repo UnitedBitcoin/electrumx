@@ -102,6 +102,7 @@ class MemPool(util.LoggedClass):
         self.logger.info('beginning processing of daemon mempool.  '
                          'This can take some time...')
         next_log = 0
+        next_hist = 0
         loops = -1  # Zero during initial catchup
 
         while True:
@@ -117,9 +118,11 @@ class MemPool(util.LoggedClass):
                 self.logger.info('catchup {:d}% complete '
                                  '({:,d} txs left)'.format(pct, todo))
             if not todo:
-                self.update_compact_histogram()
                 loops += 1
                 now = time.time()
+                if now >= next_hist and loops:
+                    self.update_compact_histogram()
+                    next_hist = now + 30
                 if now >= next_log and loops:
                     self.logger.info('{:,d} txs touching {:,d} addresses'
                                      .format(len(txs), len(self.hashXs)))
@@ -346,7 +349,7 @@ class MemPool(util.LoggedClass):
         # hashXs is a defaultdict
         if hashX in self.hashXs:
             for hex_hash in self.hashXs[hashX]:
-                txin_pairs, txout_pairs = self.txs[hex_hash]
+                txin_pairs, txout_pairs, tx_fee, tx_size = self.txs[hex_hash]
                 value -= sum(v for h168, v in txin_pairs if h168 == hashX)
                 value += sum(v for h168, v in txout_pairs if h168 == hashX)
         return value
