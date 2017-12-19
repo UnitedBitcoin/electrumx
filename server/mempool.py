@@ -369,10 +369,12 @@ class MemPool(util.LoggedClass):
         out = []
         size = 0
         r = 0
+        binsize = 100000
         for fee, s in l:
             size += s
-            if size + r > 100000:
+            if size + r > binsize:
                 out.append((fee, size))
-                r += size - 100000
+                r += size - binsize
                 size = 0
+                binsize *= 1.1
         self.compact_fee_histogram = out
