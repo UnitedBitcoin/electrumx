@@ -45,7 +45,7 @@ class Env(EnvBase):
         if self.ssl_port:
             self.ssl_certfile = self.required('SSL_CERTFILE')
             self.ssl_keyfile = self.required('SSL_KEYFILE')
-        self.rpc_port = self.integer('RPC_PORT', 8000)
+        self.rpc_port = self.integer('RPC_PORT', 8009)
         self.max_subscriptions = self.integer('MAX_SUBSCRIPTIONS', 10000)
         self.banner_file = self.default('BANNER_FILE', None)
         self.tor_banner_file = self.default('TOR_BANNER_FILE',

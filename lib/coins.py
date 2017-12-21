@@ -1217,3 +1217,29 @@ class Chips(Coin):
     REORG_LIMIT = 800
 
 
+
+
+
+class UnitedBitcoin(Coin):
+    NAME = "UnitedBitcoin"
+    SHORTNAME = "UB"
+    NET = "mainnet"
+    XPUB_VERBYTES = bytes.fromhex("0488B21E")
+    XPRV_VERBYTES = bytes.fromhex("0488ADE4")
+    P2PKH_VERBYTE = bytes.fromhex("36")
+    P2SH_VERBYTES = [bytes.fromhex("08")]
+    WIF_BYTE = bytes.fromhex("99")
+    GENESIS_HASH = ('000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f')
+    DESERIALIZER = lib_tx.DeserializerSegWit
+    DAEMON = daemon.Daemon
+    TX_COUNT = 34999
+    TX_COUNT_HEIGHT = 30070
+    TX_PER_BLOCK = 1
+    IRC_PREFIX = "E_"
+    IRC_CHANNEL = "#electrum-blk"
+    RPC_PORT = 7294
+    REORG_LIMIT = 5000
+    HEADER_HASH = None
+
+
+

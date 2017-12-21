@@ -326,8 +326,8 @@ class JSONSessionBase(util.LoggedClass):
         # Handling of outgoing requests
         self.next_request_id = 0
         # If buffered incoming data exceeds this the connection is closed
-        self.max_buffer_size = 1000000
-        self.max_send = 50000
+        self.max_buffer_size = 10000000
+        self.max_send = 5000000
         self.close_after_send = False
 
     def pause_writing(self):
@@ -344,7 +344,7 @@ class JSONSessionBase(util.LoggedClass):
         '''Return an error payload if the given outgoing message size is too
         large, or False if not.
         '''
-        if self.max_send and length > max(1000, self.max_send):
+        if self.max_send and length > max(5000000, self.max_send):
             msg = 'response too large (at least {:d} bytes)'.format(length)
             return self.error_bytes(msg, JSONRPC.INVALID_REQUEST, id_)
         return False

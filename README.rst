@@ -24,6 +24,15 @@ There is also an `Dockerfile`_ available .
 
 .. _Dockerfile: https://github.com/followtheart/electrumx-docker
 
+
+Deploy
+==============
+set env  COIN  for specific coins
+set env  TCP_PORT for open tcp port
+set env  DB_DIRECTORY for db storage
+./electrum_server.py
+
+
 Features
 ========
 
