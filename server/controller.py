@@ -754,14 +754,24 @@ class Controller(ServerBase):
         fork_height = 499200
         pre_fork_max_index = fork_height // chunk_size
         next_height = self.bp.db_height + 1
+
+        second_fork_height = 506400
+        second_chunk_size = 10
+        second_fork_index = 283
+
+
         if index <= pre_fork_max_index:
           start_height = min(index * chunk_size, next_height)
           count = min(next_height - start_height, chunk_size)
           return self.bp.read_headers(start_height, count).hex()
-        else:
+        elif index <= second_fork_index:
           start_height = min(fork_height + (index - pre_fork_max_index) * after_chunk_size, next_height)
           count = min(next_height - start_height, after_chunk_size)
           return self.bp.read_headers(start_height, count).hex()
+        else:
+            start_height = min(second_fork_height + (index - second_fork_index) * second_chunk_size, next_height)
+            count = min(next_height - start_height, second_chunk_size)
+            return self.bp.read_headers(start_height, count).hex()
 
     # Client RPC "blockchain" command handlers
 
