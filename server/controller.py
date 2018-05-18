@@ -759,6 +759,11 @@ class Controller(ServerBase):
         second_chunk_size = 10
         second_fork_index = 283
 
+        third_fork_chunk_size = 1
+        third_fork_height = 524000
+        third_fork_max_index = 2043
+        MINING_TYPE_POW = 0x02000000
+        MINING_TYPE_POS = 0x01000000
 
         if index <= pre_fork_max_index:
           start_height = min(index * chunk_size, next_height)
@@ -768,10 +773,14 @@ class Controller(ServerBase):
           start_height = min(fork_height + (index - pre_fork_max_index) * after_chunk_size, next_height)
           count = min(next_height - start_height, after_chunk_size)
           return self.bp.read_headers(start_height, count).hex()
-        else:
+        elif index <= third_fork_max_index:
             start_height = min(second_fork_height + (index - second_fork_index) * second_chunk_size, next_height)
             count = min(next_height - start_height, second_chunk_size)
             return self.bp.read_headers(start_height, count).hex()
+        else:
+            start_height = min(third_fork_height + (index - third_fork_max_index) * third_fork_chunk_size, next_height)
+            count = min(next_height - start_height, third_fork_chunk_size)
+            return self.bp.read_headers(start_height)
 
     # Client RPC "blockchain" command handlers
 
