@@ -61,7 +61,9 @@ OpCodes = Enumeration("Opcodes", [
     "OP_WITHIN",
     "OP_RIPEMD160", "OP_SHA1", "OP_SHA256", "OP_HASH160", "OP_HASH256",
     "OP_CODESEPARATOR", "OP_CHECKSIG", "OP_CHECKSIGVERIFY", "OP_CHECKMULTISIG",
-    "OP_CHECKMULTISIGVERIFY",
+    "OP_CHECKMULTISIGVERIFY",("OP_CREATE_NATIVE",0xc0),"OP_CREATE","OP_UPGRADE",
+    "OP_DESTROY","OP_CALL","OP_SPEND","OP_DEPOSIT_TO_CONTRACT",("OP_GAS_PRICE",0xf5),"OP_GAS_LIMIT","OP_DATA","OP_VERSION",
+    "OP_ROOT_STATE_HASH",
     "OP_NOP1",
     "OP_CHECKLOCKTIMEVERIFY", "OP_CHECKSEQUENCEVERIFY"
 ])
@@ -98,12 +100,18 @@ class ScriptPubKey(object):
                       OpCodes.OP_EQUALVERIFY, OpCodes.OP_CHECKSIG]
     TO_P2SH_OPS = [OpCodes.OP_HASH160, -1, OpCodes.OP_EQUAL]
     TO_PUBKEY_OPS = [-1, OpCodes.OP_CHECKSIG]
+    TO_CONTRACT_CREATE = [-1,-1,-1,-1,-1,OpCodes.OP_CREATE]
+    TO_CONTRACT_CREATE_NATIVE = [-1,-1,-1,-1,-1,OpCodes.OP_CREATE_NATIVE]
+    TO_CALL = [-1, -1, -1, -1, -1,-1,-1, OpCodes.OP_CALL]
+    TO_DEPOSIT_TO_CONTRACT = [-1,-1,-1,-1,-1,-1,OpCodes.OP_DEPOSIT_TO_CONTRACT]
+    TO_UPGRADE = [-1, -1, -1, -1, -1, -1,-1, OpCodes.OP_UPGRADE]
+    TO_SPENT = [-1,-1,OpCodes.OP_SPEND]
 
     PayToHandlers = namedtuple('PayToHandlers', 'address script_hash pubkey '
                                'unspendable strange')
 
     @classmethod
-    def pay_to(cls, handlers, script):
+    def pay_to(cls, handlers, script,index=0,tx_id=''):
         '''Parse a script, invoke the appropriate handler and
         return the result.
 
@@ -127,6 +135,16 @@ class ScriptPubKey(object):
             return handlers.script_hash(ops[1][-1])
         if match(ops, cls.TO_PUBKEY_OPS):
             return handlers.pubkey(ops[0][-1])
+        if match(ops,cls.TO_CONTRACT_CREATE):
+            return handlers.contract_create(ops[2][-1],index,tx_id)
+        if match(ops,cls.TO_CALL):
+            return handlers.contract_call(ops[3][-1])
+        if match(ops,cls.TO_DEPOSIT_TO_CONTRACT):
+            return handlers.contract_call(ops[2][-1])
+        if match(ops,cls.TO_UPGRADE):
+            return handlers.contract_call(ops[3][-1])
+        if match(ops, cls.TO_SPENT):
+            return handlers.contract_call(ops[1][-1])
         if ops and ops[0] == OpCodes.OP_RETURN:
             return handlers.unspendable()
         return handlers.strange(script)
