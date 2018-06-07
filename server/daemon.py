@@ -234,6 +234,9 @@ class Daemon(LoggedClass):
         '''Return the deserialised block with the given hex hash.'''
         return await self._send_single('getblock', (hex_hash, True))
 
+    async def getsimplecontractinfo(self,addr):
+        return await self._send_single("getsimplecontractinfo",(addr))
+
     async def raw_blocks(self, hex_hashes):
         '''Return the raw binary blocks with the given hex hashes.'''
         params_iterable = ((h, False) for h in hex_hashes)
