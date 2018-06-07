@@ -173,9 +173,10 @@ class Daemon(LoggedClass):
             raise DaemonError(err)
 
         payload = {'method': method, 'id': self.next_req_id()}
-        print(payload)
+
         if params:
             payload['params'] = params
+        print(payload)
         return await self._send(payload, processor)
 
     async def _send_vector(self, method, params_iterable, replace_errs=False):
@@ -236,7 +237,7 @@ class Daemon(LoggedClass):
         return await self._send_single('getblock', (hex_hash, True))
 
     async def getsimplecontractinfo(self,addr):
-        return await self._send_single("getsimplecontractinfo",addr)
+        return await self._send_single("getsimplecontractinfo",[addr])
 
     async def raw_blocks(self, hex_hashes):
         '''Return the raw binary blocks with the given hex hashes.'''
