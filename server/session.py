@@ -256,7 +256,7 @@ class ElectrumX(SessionBase):
         return self.env.server_features()
 
     async def blockchain_contract_getabi(self,addr):
-        contract_info = await self.controller.daemon_request('getsimplecontractinfo')
+        contract_info = await self.controller.daemon_request('getsimplecontractinfo',addr)
         return contract_info
 
 
