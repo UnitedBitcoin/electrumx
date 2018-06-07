@@ -239,6 +239,9 @@ class Daemon(LoggedClass):
     async def getsimplecontractinfo(self,addr):
         return await self._send_single("getsimplecontractinfo",[addr])
 
+    async def invokecontractoffline(self, caller, contract_address, abi, param):
+        return await self._send_single("invokecontractoffline",[caller,contract_address,abi,param])
+
     async def raw_blocks(self, hex_hashes):
         '''Return the raw binary blocks with the given hex hashes.'''
         params_iterable = ((h, False) for h in hex_hashes)
