@@ -255,6 +255,11 @@ class ElectrumX(SessionBase):
         '''Returns a dictionary of server features.'''
         return self.env.server_features()
 
+    async def blockchain_contract_getabi(self,addr):
+        contract_info = await self.controller.daemon_request('getsimplecontractinfo')
+        return contract_info
+
+
     def block_get_chunk(self, index):
         '''Return a chunk of block headers as a hexadecimal string.
 
@@ -421,6 +426,7 @@ class ElectrumX(SessionBase):
             'server.features': self.server_features,
             'server.peers.subscribe': self.peers_subscribe,
             'server.version': self.server_version,
+            'blockchain.contract.getabi':self.blockchain_contract_getabi,
         }
 
         if ptuple < (1, 1):
