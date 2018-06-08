@@ -261,7 +261,7 @@ class Daemon(LoggedClass):
         return await self._send_single('estimatefee', params)
 
     async def registercontracttesting(self,caller,bytecode):
-        return await self._send_single("registercontracttesting",(caller,bytecode))
+        return await self._send_single("registercontracttesting",[caller,bytecode])
 
     async def getnetworkinfo(self):
         '''Return the result of the 'getnetworkinfo' RPC call.'''
