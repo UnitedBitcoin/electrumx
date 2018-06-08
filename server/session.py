@@ -262,6 +262,9 @@ class ElectrumX(SessionBase):
     async def contract_invoke_contract_offline(self,caller,contract_address,abi,param):
         return await self.controller.daemon_request("invokecontractoffline",caller,contract_address,abi,param)
 
+    async def register_contract_testing(self,caller,bytecode):
+        return await self.controller.daemon_request("registercontracttesting",caller,bytecode)
+
     def block_get_chunk(self, index):
         '''Return a chunk of block headers as a hexadecimal string.
 
@@ -430,6 +433,7 @@ class ElectrumX(SessionBase):
             'server.version': self.server_version,
             'blockchain.contract.getabi':self.blockchain_contract_getabi,
             'blockchain.contract.invoke_contract_offline': self.contract_invoke_contract_offline,
+            'blockchain.contract.register_contract_testing': self.register_contract_testing,
         }
 
         if ptuple < (1, 1):

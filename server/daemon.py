@@ -260,6 +260,9 @@ class Daemon(LoggedClass):
             return estimate.get('feerate', -1)
         return await self._send_single('estimatefee', params)
 
+    async def registercontracttesting(self,caller,bytecode):
+        return await self._send_single("caller",(caller,bytecode))
+
     async def getnetworkinfo(self):
         '''Return the result of the 'getnetworkinfo' RPC call.'''
         return await self._send_single('getnetworkinfo')
