@@ -205,7 +205,9 @@ class Coin(object):
 
         sh_data = sha256(datas).digest()
         hs_data = hash160(sh_data).digest()
-        return "CON"+ Base58.encode_check(hs_data)
+
+        be_bytes = hs_data + sha256(hs_data).digest()[:4]
+        return "CON"+Base58.encode(be_bytes)
 
     @classmethod
     def Contract_call(cls,contract_address):

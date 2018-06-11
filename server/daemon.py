@@ -263,6 +263,12 @@ class Daemon(LoggedClass):
     async def registercontracttesting(self,caller,bytecode):
         return await self._send_single("registercontracttesting",[caller,bytecode])
 
+    async def getcreatecontractaddress(self,rawtx):
+        result = await self._send_single("getcreatecontractaddress",[rawtx])
+        if(result.has_key("address")):
+            return result["address"]
+        return ""
+
     async def getnetworkinfo(self):
         '''Return the result of the 'getnetworkinfo' RPC call.'''
         return await self._send_single('getnetworkinfo')
