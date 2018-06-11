@@ -269,9 +269,14 @@ class Daemon(LoggedClass):
     async def getcreatecontractaddress(self,rawtx):
         return await self._send_single("getcreatecontractaddress",[rawtx])
 
+
+    async def deposittocontracttesting(self,sender,contract,amount,memo):
+        return await self._send_single("deposittocontracttesting",[sender,contract,amount,memo])
+
     async def getnetworkinfo(self):
         '''Return the result of the 'getnetworkinfo' RPC call.'''
         return await self._send_single('getnetworkinfo')
+
 
     async def relayfee(self):
         '''The minimum fee a low-priority tx must pay in order to be accepted
