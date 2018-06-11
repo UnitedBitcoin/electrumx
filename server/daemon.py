@@ -168,6 +168,9 @@ class Daemon(LoggedClass):
             err = result['error']
             if not err:
                 return result['result']
+            if err.get('code') == -5:
+                if err.get("message") == "Contract address or name does not exist":
+                    return {}
             if err.get('code') == self.WARMING_UP:
                 raise self.DaemonWarmingUpError
             raise DaemonError(err)
