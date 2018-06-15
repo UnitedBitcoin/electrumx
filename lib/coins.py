@@ -139,12 +139,18 @@ class Coin(object):
             address=cls.P2PKH_address_from_hash160,
             script_hash=cls.P2SH_address_from_hash160,
             pubkey=cls.P2PKH_address_from_pubkey,
+            contract_create=cls.Contract_cal_address_from_data,
+            contract_create_native=cls.Contract_cal_address_from_data,
+            contract_call=cls.Contract_call,
+            contract_deposit=cls.Contract_deposit_to_contract,
+            contract_upgrade=cls.Contract_upgrade,
+            contract_spent=cls.Contract_spent,
             unspendable=lambda: None,
             strange=lambda script: None,
         )
 
     @classmethod
-    def address_from_script(cls, script):
+    def address_from_script(cls, script,index=0 ,trx_id=''):
         '''Given a pk_script, return the adddress it pays to, or None.'''
         return ScriptPubKey.pay_to(cls.address_handlers, script)
 
@@ -169,6 +175,55 @@ class Coin(object):
         '''Return a P2PKH address given a public key.'''
         assert len(hash160) == 20
         return Base58.encode_check(cls.P2PKH_VERBYTE + hash160)
+
+    @classmethod
+    def deser_string(f):
+        nit = struct.unpack("<B", f.read(1))[0]
+        if nit == 253:
+            nit = struct.unpack("<H", f.read(2))[0]
+        elif nit == 254:
+            nit = struct.unpack("<I", f.read(4))[0]
+        elif nit == 255:
+            nit = struct.unpack("<Q", f.read(8))[0]
+        return f.read(nit)
+
+    @classmethod
+    def ser_string(s):
+        if len(s) < 253:
+            return chr(len(s)) + s
+        elif len(s) < 0x10000:
+            return chr(253) + struct.pack("<H", len(s)) + s
+        elif len(s) < 0x100000000:
+            return chr(254) + struct.pack("<I", len(s)) + s
+        return chr(255) + struct.pack("<Q", len(s)) + s
+
+    @classmethod
+    def Contract_cal_address_from_data(cls,caller_address,index,trx_id):
+        datas = cls.ser_string(caller_address)
+        datas += cls.ser_string(trx_id)
+        datas += struct.pack("<I", index)
+
+        sh_data = sha256(datas).digest()
+        hs_data = hash160(sh_data).digest()
+
+        be_bytes = hs_data + sha256(hs_data).digest()[:4]
+        return "CON"+Base58.encode(be_bytes)
+
+    @classmethod
+    def Contract_call(cls,contract_address):
+        return str(contract_address)
+
+    @classmethod
+    def Contract_deposit_to_contract(cls,contract_address):
+        return str(contract_address)
+
+    @classmethod
+    def Contract_upgrade(cls,contract_address):
+        return str(contract_address)
+
+    @classmethod
+    def Contract_spent(cls,contract_address):
+        return str(contract_address)
 
     @classmethod
     def P2PKH_address_from_pubkey(cls, pubkey):

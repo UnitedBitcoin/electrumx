@@ -255,6 +255,23 @@ class ElectrumX(SessionBase):
         '''Returns a dictionary of server features.'''
         return self.env.server_features()
 
+    async def blockchain_contract_getabi(self,addr):
+        contract_info = await self.controller.daemon_request('getsimplecontractinfo',addr)
+        return contract_info
+
+    async def contract_invoke_contract_offline(self,caller,contract_address,abi,param):
+        return await self.controller.daemon_request("invokecontractoffline",caller,contract_address,abi,param)
+
+    async def register_contract_testing(self,caller,bytecode):
+        return await self.controller.daemon_request("registercontracttesting",caller,bytecode)
+
+    async def get_contract_address(self,rawtx):
+        return await self.controller.daemon_request("getcreatecontractaddress",rawtx)
+
+    async def deposit_contract_testing(self,sender,contract,amount,memo):
+        return await self.controller.daemon_request("deposittocontracttesting",sender,contract,amount,memo)
+
+
     def block_get_chunk(self, index):
         '''Return a chunk of block headers as a hexadecimal string.
 
@@ -421,6 +438,11 @@ class ElectrumX(SessionBase):
             'server.features': self.server_features,
             'server.peers.subscribe': self.peers_subscribe,
             'server.version': self.server_version,
+            'blockchain.contract.getabi':self.blockchain_contract_getabi,
+            'blockchain.contract.invoke_contract_offline': self.contract_invoke_contract_offline,
+            'blockchain.contract.register_contract_testing': self.register_contract_testing,
+            'blockchain.contract.get_contract_address': self.get_contract_address,
+            'blockchain.contract.deposit_contract_testing': self.deposit_contract_testing,
         }
 
         if ptuple < (1, 1):

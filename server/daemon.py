@@ -168,13 +168,18 @@ class Daemon(LoggedClass):
             err = result['error']
             if not err:
                 return result['result']
+            if err.get('code') == -5:
+                if err.get("message") == "Contract address or name does not exist":
+                    return {}
             if err.get('code') == self.WARMING_UP:
                 raise self.DaemonWarmingUpError
             raise DaemonError(err)
 
         payload = {'method': method, 'id': self.next_req_id()}
+
         if params:
             payload['params'] = params
+        print(payload)
         return await self._send(payload, processor)
 
     async def _send_vector(self, method, params_iterable, replace_errs=False):
@@ -234,6 +239,12 @@ class Daemon(LoggedClass):
         '''Return the deserialised block with the given hex hash.'''
         return await self._send_single('getblock', (hex_hash, True))
 
+    async def getsimplecontractinfo(self,addr):
+        return await self._send_single("getsimplecontractinfo",[addr])
+
+    async def invokecontractoffline(self, caller, contract_address, abi, param):
+        return await self._send_single("invokecontractoffline",[caller,contract_address,abi,param])
+
     async def raw_blocks(self, hex_hashes):
         '''Return the raw binary blocks with the given hex hashes.'''
         params_iterable = ((h, False) for h in hex_hashes)
@@ -252,9 +263,20 @@ class Daemon(LoggedClass):
             return estimate.get('feerate', -1)
         return await self._send_single('estimatefee', params)
 
+    async def registercontracttesting(self,caller,bytecode):
+        return await self._send_single("registercontracttesting",[caller,bytecode])
+
+    async def getcreatecontractaddress(self,rawtx):
+        return await self._send_single("getcreatecontractaddress",[rawtx])
+
+
+    async def deposittocontracttesting(self,sender,contract,amount,memo):
+        return await self._send_single("deposittocontracttesting",[sender,contract,amount,memo])
+
     async def getnetworkinfo(self):
         '''Return the result of the 'getnetworkinfo' RPC call.'''
         return await self._send_single('getnetworkinfo')
+
 
     async def relayfee(self):
         '''The minimum fee a low-priority tx must pay in order to be accepted
