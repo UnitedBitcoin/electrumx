@@ -760,8 +760,8 @@ class Controller(ServerBase):
         second_fork_index = 283
 
         third_fork_chunk_size = 1
-        third_fork_height = 531850
-        third_fork_max_index = 2828
+        third_fork_height = 551111
+        third_fork_max_index = 4755
         MINING_TYPE_POW = 0x02000000
         MINING_TYPE_POS = 0x01000000
 
