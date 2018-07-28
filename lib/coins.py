@@ -1281,8 +1281,8 @@ class UnitedBitcoin(Coin):
     NET = "mainnet"
     XPUB_VERBYTES = bytes.fromhex("0488B21E")
     XPRV_VERBYTES = bytes.fromhex("0488ADE4")
-    P2PKH_VERBYTE = bytes.fromhex("36")
-    P2SH_VERBYTES = [bytes.fromhex("08")]
+    P2PKH_VERBYTE = bytes.fromhex("00")
+    P2SH_VERBYTES = [bytes.fromhex("05")]
     WIF_BYTE = bytes.fromhex("99")
     GENESIS_HASH = ('000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f')
     DESERIALIZER = lib_tx.DeserializerSegWit
