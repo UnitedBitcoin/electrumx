@@ -410,7 +410,7 @@ class DB(util.LoggedClass):
 
         keys = []
         for key, hist in self.hist_db.iterator(prefix=b''):
-            flush_id, = unpack('>H', key[-2:])
+            flush_id, = unpack('>L', key[-4:])
             if flush_id > flush_count:
                 keys.append(key)
 
@@ -451,7 +451,7 @@ class DB(util.LoggedClass):
 
     def flush_history(self, history):
         self.flush_count += 1
-        flush_id = pack('>H', self.flush_count)
+        flush_id = pack('>L', self.flush_count)
 
         with self.hist_db.write_batch() as batch:
             for hashX in sorted(history):
